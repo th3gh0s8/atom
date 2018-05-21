@@ -6,12 +6,6 @@ skip_tags: true
 clone_folder: c:\projects\atom
 clone_depth: 10
 
-branches:
-  only:
-  - master
-  - /^[0-9.]+-releases$/
-  - /^electron-[0-9.]+$/
-
 platform:
   - x64
   - x86
@@ -46,17 +40,7 @@ build_script:
   - IF [%APPVEYOR_REPO_BRANCH%]==[master] IF NOT DEFINED APPVEYOR_PULL_REQUEST_NUMBER SET IS_SIGNED_ZIP_BRANCH=true
   - IF [%APPVEYOR_REPO_BRANCH:~0,9%]==[electron-] SET IS_SIGNED_ZIP_BRANCH=true
   - IF [%TASK%]==[installer] (
-      IF [%IS_RELEASE_BRANCH%]==[true] (
-        ECHO Building on release branch - Creating production artifacts &&
-        script\build.cmd --code-sign --compress-artifacts --create-windows-installer
-      ) ELSE (
-        IF [%IS_SIGNED_ZIP_BRANCH%]==[true] (
-          ECHO Building on %APPVEYOR_REPO_BRANCH% branch - Creating signed zips &&
-          script\build.cmd --code-sign --compress-artifacts
-        ) ELSE (
-          ECHO Skipping installer build for non-release/non-master branch
-        )
-      )
+      script\build.cmd --code-sign --compress-artifacts
     ) ELSE (
       ECHO Test build only - Not creating artifacts &&
       script\build.cmd
